@@ -103,8 +103,8 @@
 (cffi:defcfun ("getaddrinfo" getaddrinfo) :int
   (node :string)
   (service :string)
-  (hints (:pointer addrinfo))
-  (res (:pointer (:pointer addrinfo))))
+  (hints (:pointer (:struct addrinfo)))
+  (res (:pointer (:struct addrinfo))))
 
 (cffi:defcfun ("freeaddrinfo" freeaddrinfo) :void
-  (res (:pointer addrinfo)))
+  (res (:pointer (:struct addrinfo))))
