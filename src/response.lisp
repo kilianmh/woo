@@ -17,8 +17,6 @@
            :finish-response))
 (in-package :woo.response)
 
-(declaim (inline wev:write-socket-data wev:write-socket-byte))
-
 (defun status-code-to-text (code)
   (cond
     ((< code 200)

@@ -85,6 +85,17 @@
   (declare (optimize (speed 3) (safety 0) (debug 0)))
   (= (the fixnum (fast-io::output-buffer-len (socket-buffer socket))) 0))
 
+(declaim (inline socket-read-watcher socket-write-watcher socket-timeout-timer))
+
+(defun socket-read-watcher (socket)
+  (svref (socket-watchers socket) 0))
+
+(defun socket-write-watcher (socket)
+  (svref (socket-watchers socket) 1))
+
+(defun socket-timeout-timer (socket)
+  (svref (socket-watchers socket) 2))
+
 (defun make-socket (&rest initargs &key tcp-read-cb fd &allow-other-keys)
   (let ((socket (apply #'%make-socket initargs)))
     (lev:ev-io-init (socket-read-watcher socket)
@@ -96,17 +107,6 @@
                     fd
                     lev:+EV-WRITE+)
     socket))
-
-(declaim (inline socket-read-watcher socket-write-watcher socket-timeout-timer))
-
-(defun socket-read-watcher (socket)
-  (svref (socket-watchers socket) 0))
-
-(defun socket-write-watcher (socket)
-  (svref (socket-watchers socket) 1))
-
-(defun socket-timeout-timer (socket)
-  (svref (socket-watchers socket) 2))
 
 (defun free-watchers (socket)
   (let ((read-watcher (socket-read-watcher socket))
@@ -139,6 +139,8 @@
 (defun check-socket-open (socket)
   (unless (socket-open-p socket)
     (error 'socket-closed)))
+
+(declaim (inline write-socket-data write-socket-byte))
 
 (defun write-socket-data (socket data &key (start 0) (end (length data))
                                         (write-cb nil write-cb-specified-p))
